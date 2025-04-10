@@ -8,8 +8,9 @@ public class AgentExample : Agent
     [Header("Sensor Settings")]
     public float meleeSensorRadius = 0.5f;//Ejemplo de cuando alguien esté a mele para que lo acuchiche 
     public LayerMask enemyDetectionMask;//Usar layer mask o tags para filtrar entre las percepciones()
-    public Vector2[] pathFollowPoints;
-
+    //public Vector2[] pathFollowPoints;
+    [Header("Path Settings")]
+    public PathSystem currentPath;
 
     [Header("Debug")]
     [SerializeField] private AgentState currentState;
@@ -51,11 +52,11 @@ public class AgentExample : Agent
         switch (currentState)
         {
             case AgentState.Pursuit:
-                if (pathFollowPoints.Length == 0) return;
-                rb.linearVelocity = steering.PathFollowing(pathFollowPoints, this.transform, this.rb, normalSpeed, 0.5f, 1);//llamas al steering correspondiente
+                if (currentPath.PathPoints.Length == 0) return;
+                rb.linearVelocity = steering.PathFollowing(currentPath.PathPoints, this.transform, this.rb, normalSpeed, 0.5f, 1);//llamas al steering correspondiente
                 //Esto solo es para dibujar la linea de direccion
                 GameObject temp = new GameObject("TempTarget");
-                temp.transform.position = pathFollowPoints[steering.currentWaypoint];
+                temp.transform.position = currentPath.PathPoints[steering.currentWaypoint];
                 temp.transform.rotation = Quaternion.identity;
                 temp.transform.localScale = Vector3.one;
 
@@ -96,7 +97,7 @@ public class AgentExample : Agent
         if(currentTarget != null)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(pathFollowPoints[steering.currentWaypoint], 0.2f);
+            Gizmos.DrawWireSphere(currentPath.PathPoints[steering.currentWaypoint], 0.2f);
         }
 
         if (currentTarget != null)
